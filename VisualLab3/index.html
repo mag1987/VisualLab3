@@ -6,53 +6,71 @@
 </head>
 <body>
     <div>
-        <h2>All Products</h2>
-        <ul id="products" />
-    </div>
-    <div>
-        <h2>Search by Name (part Name)</h2>
-        <input type="text" id="searchName" size="5" />
-        <input type="button" value="Search" onclick="find();" />
-        <p id="product" />
+        <h2>Организации</h2>
+        <p>
+            Название организации
+            <input type="text" id="NameOrganization" size="15" />
+        </p>
+        <p>
+            ИНН организации
+            <input type="text" id="InnOrganization" size="15" />
+        </p>
+        <p>
+            Телефон организации
+            <input type="text" id="PhoneOrganization" size="15" />
+        </p>
+        <br />
+        <input type="button" value="Показать все" onclick="ShowAll();" />
+        <input type="button" value="Добавить" onclick="Add();" />
+        <input type="button" value="Изменить" onclick="Change();" />
+        <input type="button" value="Найти" onclick="Find();" />
+        <input type="button" value="Удалить" onclick="Delete();" />
+        <h2>Результаты</h2>
+        <p id="output" />
     </div>
 
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
     <script>
         var uri = 'api/organization';
-
-        $(document).ready(function () {
-            // Send an AJAX request
-            $.getJSON(uri + '/GetAllOrganizations')
-                .done(function (data) {
-                    // On success, 'data' contains a list of products.
-                    $.each(data, function (key, item) {
-                        // Add a list item for the product.
-                        $('<li>', { text: formatItem(item) }).appendTo($('#products'));
-                    });
-                });
-        });
-
-        function formatItem(item)
-        {
+        function formatItem(item) {
             return item.Name + ', ИНН: ' + item.Inn + ', Тел.: ' + item.Phone;
         }
-
-        function find()
-        {
-            var sn = $('#searchName').val();
-            $.getJSON(uri + '/GetOrganizations1?Name=' + sn)
-                .done(function (data)
-                {
+        function ShowAll() {
+            $.getJSON(uri + '/GetAllOrganizations')
+                .done(function (data) {
+                    $('#output').text('');
                     $.each(data, function (key, item) {
-                        // Add a list item for the product.
-                        $('<li>', { text: formatItem(item) }).appendTo($('#product'));
+                        $('<p>', { text: formatItem(item) }, '</p>').appendTo($('#output'));
                     });
-                    //$('#product').text(formatItem(data));
-                })
-                .fail(function (jqXHR, textStatus, err)
-                {
-                    $('#product').text('Error: ' + err);
                 });
+        }
+        function Add() {
+            var name = $('#NameOrganization').val();
+            var inn = $('#InnOrganization').val();
+            var phone = $('#PhoneOrganization').val();
+            $.getJSON(uri + '/AddOrganization?name=' + name + '&inn=' + inn + '&phone=' + phone);
+        }
+        function Find() {
+            var sn = $('#NameOrganization').val();
+            $.getJSON(uri + '/GetOrganizations?Name=' + sn)
+                .done(function (data) {
+                    $('#output').text('');
+                    $.each(data, function (key, item) {
+                        $('<p>', { text: formatItem(item) }, '</p>').appendTo($('#output'));
+                    });
+                });
+        }
+        function Change() {
+            var name = $('#NameOrganization').val();
+            var inn = $('#InnOrganization').val();
+            var phone = $('#PhoneOrganization').val();
+            $.getJSON(uri + '/ChangeOrganization?name=' + name + '&inn=' + inn + '&phone=' + phone);
+        }
+        function Delete() {
+            var name = $('#NameOrganization').val();
+            var inn = $('#InnOrganization').val();
+            var phone = $('#PhoneOrganization').val();
+            $.getJSON(uri + '/DeleteOrganization?name=' + name + '&inn=' + inn + '&phone=' + phone);
         }
     </script>
 </body>
